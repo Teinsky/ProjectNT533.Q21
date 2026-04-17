@@ -1,0 +1,23 @@
+---
+- name: Cài đặt K3s Agent và Join vào Master
+  hosts: workers
+  become: yes
+  vars:
+    master_ip: "192.168.100.233"
+  tasks:
+    - name: Đọc token từ máy Master
+      command: cat /var/lib/rancher/k3s/server/node-token
+      delegate_to: 127.0.0.1
+      register: master_node_token
+
+    - name: Tải và cài đặt k3s agent
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip }}:6443 K3S_TOKEN={{ master_node_token.stdout }} sh -
+      args:
+        creates: /etc/systemd/system/k3s-agent.service
+
+    - name: Đảm bảo k3s-agent đang chạy
+      service:
+        name: k3s-agent
+        state: started
+        enabled: yes
