@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/tam0624/sample-app:latest
+          image: ghcr.io/teinsky/sample-app:latest
           ports:
             - containerPort: 5000
           resources:
